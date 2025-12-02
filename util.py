@@ -1,6 +1,5 @@
 from encryption import aes_decrypt
 
-
 class User:
     def __init__(self, user_id, username, passwords):
         self.user_id = user_id
@@ -13,17 +12,17 @@ class User:
                 return password
         return None
 
-
 class Password:
-    def __init__(self, password_id:str, label:str, key: str, password: str):
+    def __init__(self, password_id: str, label: str, key: str, password: str, login: str = ""):
         self.password_id = password_id
         self.label = label
+        self.login = login
         self._key = key
         self._password = password
 
     def get_password(self):
         return aes_decrypt(self._key, self._password)
 
-    def set_password(self,key, password):
+    def set_password(self, key, password):
         self._key = key
         self._password = password

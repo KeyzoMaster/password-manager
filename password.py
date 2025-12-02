@@ -19,7 +19,4 @@ def hash_pw(password):
     return hashed
 
 def verify_password(pw_attempt:str, hashed):
-    if bcrypt.checkpw(pw_attempt.encode(),hashed):
-        return True
-    else:
-        return False
+    return bcrypt.checkpw(pw_attempt.encode(),hashed)

@@ -22,6 +22,7 @@ class PasswordManagerDB:
             CREATE TABLE IF NOT EXISTS passwords (
                 id TEXT PRIMARY KEY,
                 label TEXT NOT NULL UNIQUE,
+                login TEXT,
                 key TEXT NOT NULL,
                 password TEXT NOT NULL,
                 user_id TEXT NOT NULL,
@@ -54,9 +55,10 @@ class PasswordManagerDB:
         else:
             return "Utilisateur non existant ou mot de passe incorrect ", None
 
+
     def get_passwords(self, user_id):
         self.cursor.execute('''
-            SELECT id, label, key, password FROM passwords WHERE user_id = ?
+            SELECT id, label, key, password, login FROM passwords WHERE user_id = ?
         ''', (user_id,))
 
         result = self.cursor.fetchall()
@@ -66,11 +68,11 @@ class PasswordManagerDB:
         passwords: list[Password] = [Password(*password) for password in result]
         return passwords
 
-    def insert_password(self, user_id, label ,key, password):
+    def insert_password(self, user_id, label ,key, password, login=""):
         password_id = str(uuid.uuid4())
         self.cursor.execute('''
-            INSERT INTO passwords(id, label, key, password, user_id) VALUES (?, ?, ?, ?, ?)
-        ''', (password_id, label, key, password, user_id))
+            INSERT INTO passwords(id, label, key, password, user_id, login) VALUES (?, ?, ?, ?, ?, ?)
+        ''', (password_id, label, key, password, user_id, login))
         self.conn.commit()
         return password_id
 
