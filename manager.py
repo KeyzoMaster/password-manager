@@ -3,7 +3,6 @@ from encryption import aes_encrypt
 from password import hash_pw
 from util import User, Password
 
-
 class Manager:
     def __init__(self, user: User | None = None):
         self.user: User | None = user
@@ -29,23 +28,26 @@ class Manager:
 
     # UPDATED METHOD
     def add_password(self, label, password, login=""):
-        key, ciphertext = aes_encrypt(password)
+        ciphertext = aes_encrypt(password)
 
         # Pass login to database
         password_id = self.password_db.insert_password(
-            self.user.user_id, label, key, ciphertext, login
+            self.user.user_id, label, ciphertext, login
         )
 
         # Pass login to the in-memory object
         self.user.passwords.append(
-            Password(password_id, label, key, ciphertext, login)
+            Password(password_id, label, ciphertext, login)
         )
 
+    def generate_password(self, length):
+        pass
+
     def update_password(self, password_id: str, new_password: str):
-        key, ciphertext = aes_encrypt(new_password)
-        self.password_db.update_password(password_id, key, new_password)
+        ciphertext = aes_encrypt(new_password)
+        self.password_db.update_password(password_id, new_password)
         password = self.user.find_password_by_id_or_label(password_id)
-        password.set_password(key, ciphertext)
+        password.set_password(ciphertext)
 
     def delete_password(self, password: Password):
         self.password_db.delete_password(password.password_id)

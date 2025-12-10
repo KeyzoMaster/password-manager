@@ -1,15 +1,16 @@
 import secrets
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from decouple import config
+
+KEY =  bytes.fromhex(config('SECRET_KEY'))
+aes = AESGCM(KEY)
 
 def aes_encrypt(message):
-    key = secrets.token_bytes(32)
     nonce = secrets.token_bytes(12)
-    aes = AESGCM(key)
     ciphertext = nonce + aes.encrypt(nonce, message.encode(),None)
-    return key.hex(), ciphertext.hex()
+    return ciphertext.hex()
 
-def aes_decrypt(key, message):
+def aes_decrypt(message):
     ciphertext = bytes.fromhex(message)
-    aes = AESGCM(bytes.fromhex(key))
     plaintext = aes.decrypt(ciphertext[:12], ciphertext[12:], None)
     return plaintext.decode()

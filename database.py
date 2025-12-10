@@ -23,7 +23,6 @@ class PasswordManagerDB:
                 id TEXT PRIMARY KEY,
                 label TEXT NOT NULL UNIQUE,
                 login TEXT,
-                key TEXT NOT NULL,
                 password TEXT NOT NULL,
                 user_id TEXT NOT NULL,
                 FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -58,7 +57,7 @@ class PasswordManagerDB:
 
     def get_passwords(self, user_id):
         self.cursor.execute('''
-            SELECT id, label, key, password, login FROM passwords WHERE user_id = ?
+            SELECT id, label, password, login FROM passwords WHERE user_id = ?
         ''', (user_id,))
 
         result = self.cursor.fetchall()
@@ -68,18 +67,18 @@ class PasswordManagerDB:
         passwords: list[Password] = [Password(*password) for password in result]
         return passwords
 
-    def insert_password(self, user_id, label ,key, password, login=""):
+    def insert_password(self, user_id, label , password, login=""):
         password_id = str(uuid.uuid4())
         self.cursor.execute('''
-            INSERT INTO passwords(id, label, key, password, user_id, login) VALUES (?, ?, ?, ?, ?, ?)
-        ''', (password_id, label, key, password, user_id, login))
+            INSERT INTO passwords(id, label, password, user_id, login) VALUES (?, ?, ?, ?, ?)
+        ''', (password_id, label, password, user_id, login))
         self.conn.commit()
         return password_id
 
-    def update_password(self, password_id, new_key ,new_password):
+    def update_password(self, password_id, new_password):
         self.cursor.execute('''
-            UPDATE passwords SET password = ?, key = ? WHERE id = ?
-        ''', (new_password, new_key, password_id))
+            UPDATE passwords SET password = ? WHERE id = ?
+        ''', (new_password, password_id))
         self.conn.commit()
 
     def delete_password(self, password_id):

@@ -13,16 +13,14 @@ class User:
         return None
 
 class Password:
-    def __init__(self, password_id: str, label: str, key: str, password: str, login: str = ""):
+    def __init__(self, password_id: str, label: str, password: str, login: str = ""):
         self.password_id = password_id
         self.label = label
         self.login = login
-        self._key = key
         self._password = password
 
     def get_password(self):
-        return aes_decrypt(self._key, self._password)
+        return aes_decrypt(self._password)
 
-    def set_password(self, key, password):
-        self._key = key
+    def set_password(self, password):
         self._password = password
